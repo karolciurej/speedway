@@ -1,4 +1,4 @@
-class Speedway{
+export default class Speedway{
     width;
     height;
     ctx;
