@@ -1,6 +1,6 @@
 export default class Motor {
     pos = {x: 0, y: 0}
-    angle = 0
+    angle = 90
     constructor(canvasId, width, height, count) {
         this.canvas = document.getElementById(canvasId);
         this.ctx = this.canvas.getContext("2d");
@@ -13,7 +13,7 @@ export default class Motor {
     drawMotor() {
         this.ctx.save();
         this.ctx.fillStyle = "blue";
-        this.ctx.translate(this.pos.x + this.width / 2, this.pos.y + this.height / 2); 
+        this.ctx.translate(this.pos.x, this.pos.y); 
         this.ctx.rotate((this.angle * Math.PI) / 180); 
         this.ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height); 
         this.ctx.restore();
