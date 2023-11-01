@@ -22,22 +22,22 @@ export default class Motor {
     this.move = this.move.bind(this);
     document.addEventListener("keydown", this.keyPress.bind(this));
   }
+  //* Poruszanie do przodu
   start() {
     requestAnimationFrame(this.move);
   }
   drawMotor() {
     this.ctx.save();
-    this.ctx.fillStyle = "blue";
     this.ctx.translate(this.pos.x, this.pos.y);
     this.ctx.rotate((this.angle * Math.PI) / 180);
-    this.ctx.fillRect(
-      -this.width / 2,
-      -this.height / 2,
-      this.width,
-      this.height
-    );
+    this.ctx.fillStyle = 'blue'
+    this.ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
+
+ 
+  
     this.ctx.restore();
   }
+  
   update() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.speedway.drawSpeedway();
@@ -46,13 +46,14 @@ export default class Motor {
     this.pos.x += this.speed * Math.cos(radians);
     this.pos.y += this.speed * Math.sin(radians);
     this.drawMotor();
-    this.drawCorners()
   }
   move() {
     if (!this.isMoving) return;
     this.update();
     requestAnimationFrame(this.move);
   }
+
+  //* Przyciski
   keyPress(event) {
     if (event.key === this.leftKey) {
       this.turnLeft();
@@ -74,6 +75,8 @@ export default class Motor {
       this.lastTurnRight = currentTime;
     }
   }
+
+  //* Sprawdzanie czy auto jest w torze
   isInPath() {
     const path = new Path2D();
     path.ellipse(400, 400, 300, 350, 0, 0, 2 * Math.PI);
@@ -88,16 +91,17 @@ export default class Motor {
     let cornersOutside = true;
 
     for (const corner of corners) {
-        if (!this.ctx.isPointInPath(path, corner.x, corner.y)) {
-            cornersInside = false;
-        }
-        if (this.ctx.isPointInPath(path2, corner.x, corner.y)) {
-            cornersOutside = false;
-        }
+      if (!this.ctx.isPointInPath(path, corner.x, corner.y)) {
+        cornersInside = false;
+
+      }
+      if (this.ctx.isPointInPath(path2, corner.x, corner.y)) {
+        cornersOutside = false;
+      }
     }
 
     if (!cornersInside || !cornersOutside) {
-        this.speed = 0;
+      this.speed = 0;
     }
   }
 
@@ -109,25 +113,36 @@ export default class Motor {
     const sinA = Math.sin(radians);
 
     const corners = [
-        { x: this.pos.x + halfWidth * cosA - halfHeight * sinA, y: this.pos.y + halfWidth * sinA + halfHeight * cosA },
-        { x: this.pos.x - halfWidth * cosA - halfHeight * sinA, y: this.pos.y - halfWidth * sinA + halfHeight * cosA },
-        { x: this.pos.x + halfWidth * cosA + halfHeight * sinA, y: this.pos.y + halfWidth * sinA - halfHeight * cosA },
-        { x: this.pos.x - halfWidth * cosA + halfHeight * sinA, y: this.pos.y - halfWidth * sinA - halfHeight * cosA },
+      {
+        x: this.pos.x + halfWidth * cosA - halfHeight * sinA,
+        y: this.pos.y + halfWidth * sinA + halfHeight * cosA,
+      },
+      {
+        x: this.pos.x - halfWidth * cosA - halfHeight * sinA,
+        y: this.pos.y - halfWidth * sinA + halfHeight * cosA,
+      },
+      {
+        x: this.pos.x + halfWidth * cosA + halfHeight * sinA,
+        y: this.pos.y + halfWidth * sinA - halfHeight * cosA,
+      },
+      {
+        x: this.pos.x - halfWidth * cosA + halfHeight * sinA,
+        y: this.pos.y - halfWidth * sinA - halfHeight * cosA,
+      },
     ];
 
     return corners;
-}
+  }
 
 
-drawCorners() {
-    const corners = this.getCorners();
-    this.ctx.fillStyle = 'red';
-    for (const corner of corners) {
-        this.ctx.beginPath();
-        this.ctx.arc(corner.x, corner.y, 2, 0, 2 * Math.PI);
-        this.ctx.fill();
-    }
-}
-
-
+  //! Wyświetlanie narożników
+  // drawCorners() {
+  //     const corners = this.getCorners();
+  //     this.ctx.fillStyle = 'red';
+  //     for (const corner of corners) {
+  //         this.ctx.beginPath();
+  //         this.ctx.arc(corner.x, corner.y, 2, 0, 2 * Math.PI);
+  //         this.ctx.fill();
+  //     }
+  // }
 }
