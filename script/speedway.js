@@ -4,24 +4,32 @@ export default class Speedway {
     this.ctx = this.canvas.getContext("2d");
     this.width = this.canvas.width;
     this.height = this.canvas.height;
-    this.pattern = null
+    this.roadPattern = null
+    this.grassPattern = null
     this.loadImage()
   }
   loadImage() {
-    const img = new Image();
-    img.src = 'img/droga2.png';
-    img.onload = () => {
-      this.pattern = this.ctx.createPattern(img, "repeat");
+    const roadImg = new Image();
+    const grassImg = new Image()
+    roadImg.src = 'img/path.jpeg';
+    grassImg.src = 'img/grass.jpg';
+
+    roadImg.onload = () => {
+      this.roadPattern = this.ctx.createPattern(roadImg, "repeat");
     };
+    grassImg.onload = () => {
+            this.grassPattern = this.ctx.createPattern(grassImg, "repeat")
+
+    }
 
 
   }
   drawSpeedway() {
 
-    this.ctx.fillStyle = "#376A4f";
+    this.ctx.fillStyle = this.grassPattern;
     this.ctx.fillRect(0, 0, this.width, this.height);
     this.ctx.beginPath();
-    this.ctx.fillStyle = this.pattern;
+    this.ctx.fillStyle = this.roadPattern;
     this.ctx.ellipse(400, 400, 300, 350, 0, 0, 2 * Math.PI);
     this.ctx.fill();
     this.ctx.beginPath();
@@ -29,7 +37,7 @@ export default class Speedway {
     this.ctx.fill();
     this.ctx.fillRect(400, 50, 600, 700);
     this.ctx.beginPath();
-    this.ctx.fillStyle = "#376A4f";
+    this.ctx.fillStyle = this.grassPattern;
     this.ctx.ellipse(450, 400, 150, 175, 0, 0, 2 * Math.PI);
     this.ctx.fill();
     this.ctx.beginPath();

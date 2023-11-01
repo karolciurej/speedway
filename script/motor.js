@@ -5,7 +5,7 @@ export default class Motor {
   pos = { x: 0, y: 0 };
   angle = 0;
   isMoving = true;
-  speed = 0.4;
+  speed = 0.35;
   constructor(canvasId, width, height, count, leftKey, rightKey) {
     this.canvas = document.getElementById(canvasId);
     this.ctx = this.canvas.getContext("2d");
@@ -14,6 +14,8 @@ export default class Motor {
     this.height = height;
     this.pos.x = this.canvas.width / 2;
     this.pos.y = 600 + 15 * count;
+    this.chickenPattern = null
+    this.loadImage()
     this.leftKey = leftKey;
     this.rightKey = rightKey;
     this.lastTurnLeft = 0;
@@ -23,6 +25,14 @@ export default class Motor {
     this.move = this.move.bind(this);
     document.addEventListener("keydown", this.keyPress.bind(this));
   }
+  loadImage() {
+    const chickenImg = new Image();
+    chickenImg.src = 'img/chicken.png';
+
+    chickenImg.onload = () => {
+      this.chickenPattern = this.ctx.createPattern(chickenImg, "repeat");
+    }
+}
   //* Poruszanie do przodu
   start() {
     requestAnimationFrame(this.move);
@@ -31,10 +41,12 @@ export default class Motor {
     this.ctx.save();
     this.ctx.translate(this.pos.x, this.pos.y);
     this.ctx.rotate((this.angle * Math.PI) / 180);
-    this.ctx.fillStyle = 'blue'
-    this.ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
+    this.ctx.translate(-this.width / 2, -this.height / 2);
+    this.ctx.fillStyle = this.chickenPattern;
+    this.ctx.fillRect(0, 0, this.width, this.height);
     this.ctx.restore();
-  }
+}
+
   
   update(deltaTime) {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -44,14 +56,13 @@ export default class Motor {
     this.pos.x += this.speed * Math.cos(radians) * deltaTime;
     this.pos.y += this.speed * Math.sin(radians) * deltaTime;
     this.drawMotor();
+    this.drawCorners()
   }
   
   move(timestamp) {
     if (!this.isMoving) return;
     if (!this.lastFrameTime) this.lastFrameTime = timestamp;
-    console.log(timestamp)
     const deltaTime = timestamp - this.lastFrameTime;
-    console.log(deltaTime)
     this.lastFrameTime = timestamp;
     this.update(deltaTime);
     requestAnimationFrame(this.move);
@@ -115,38 +126,39 @@ export default class Motor {
     const halfHeight = this.height / 2;
     const cosA = Math.cos(radians);
     const sinA = Math.sin(radians);
-
+  
     const corners = [
       {
-        x: this.pos.x + halfWidth * cosA - halfHeight * sinA,
-        y: this.pos.y + halfWidth * sinA + halfHeight * cosA,
+        x: this.pos.x + (cosA * halfWidth) - (sinA * halfHeight) ,
+        y: this.pos.y + (sinA * halfWidth) + (cosA * halfHeight)  ,
       },
       {
-        x: this.pos.x - halfWidth * cosA - halfHeight * sinA,
-        y: this.pos.y - halfWidth * sinA + halfHeight * cosA,
+        x: this.pos.x - (cosA * halfWidth) - (sinA * halfHeight),
+        y: this.pos.y - (sinA * halfWidth) + (cosA * halfHeight),
       },
       {
-        x: this.pos.x + halfWidth * cosA + halfHeight * sinA,
-        y: this.pos.y + halfWidth * sinA - halfHeight * cosA,
+        x: this.pos.x + (cosA * halfWidth) + (sinA * halfHeight),
+        y: this.pos.y + (sinA * halfWidth) - (cosA * halfHeight),
       },
       {
-        x: this.pos.x - halfWidth * cosA + halfHeight * sinA,
-        y: this.pos.y - halfWidth * sinA - halfHeight * cosA,
+        x: this.pos.x - (cosA * halfWidth) + (sinA * halfHeight),
+        y: this.pos.y - (sinA * halfWidth) - (cosA * halfHeight),
       },
     ];
-
+  
     return corners;
   }
+  
 
 
-  //! Wyświetlanie narożników
-  // drawCorners() {
-  //     const corners = this.getCorners();
-  //     this.ctx.fillStyle = 'red';
-  //     for (const corner of corners) {
-  //         this.ctx.beginPath();
-  //         this.ctx.arc(corner.x, corner.y, 2, 0, 2 * Math.PI);
-  //         this.ctx.fill();
-  //     }
-  // }
+//   ! Wyświetlanie narożników
+  drawCorners() {
+      const corners = this.getCorners();
+      this.ctx.fillStyle = 'red';
+      for (const corner of corners) {
+          this.ctx.beginPath();
+          this.ctx.arc(corner.x, corner.y, 2, 0, 2 * Math.PI);
+          this.ctx.fill();
+      }
+  }
 }
