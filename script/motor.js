@@ -5,7 +5,7 @@ export default class Motor {
   pos = { x: 0, y: 0 };
   angle = 0;
   isMoving = true;
-  speed = 1.5;
+  speed = 0.4;
   constructor(canvasId, width, height, count, leftKey, rightKey) {
     this.canvas = document.getElementById(canvasId);
     this.ctx = this.canvas.getContext("2d");
@@ -19,6 +19,7 @@ export default class Motor {
     this.lastTurnLeft = 0;
     this.lastTurnRight = 0;
     this.turnDelay = 40;
+    this.lastFrameTime = 0;
     this.move = this.move.bind(this);
     document.addEventListener("keydown", this.keyPress.bind(this));
   }
@@ -32,24 +33,27 @@ export default class Motor {
     this.ctx.rotate((this.angle * Math.PI) / 180);
     this.ctx.fillStyle = 'blue'
     this.ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
-
- 
-  
     this.ctx.restore();
   }
   
-  update() {
+  update(deltaTime) {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.speedway.drawSpeedway();
     this.isInPath();
     const radians = (this.angle * Math.PI) / 180;
-    this.pos.x += this.speed * Math.cos(radians);
-    this.pos.y += this.speed * Math.sin(radians);
+    this.pos.x += this.speed * Math.cos(radians) * deltaTime;
+    this.pos.y += this.speed * Math.sin(radians) * deltaTime;
     this.drawMotor();
   }
-  move() {
+  
+  move(timestamp) {
     if (!this.isMoving) return;
-    this.update();
+    if (!this.lastFrameTime) this.lastFrameTime = timestamp;
+    console.log(timestamp)
+    const deltaTime = timestamp - this.lastFrameTime;
+    console.log(deltaTime)
+    this.lastFrameTime = timestamp;
+    this.update(deltaTime);
     requestAnimationFrame(this.move);
   }
 
