@@ -4,5 +4,5 @@ import Motor from './motor.js';
 const speedway = new Speedway("canvas");
 speedway.drawSpeedway();
 
-const motor1 = new Motor("canvas", 20,10,0)
-motor1.drawMotor()
+const motor1 = new Motor("canvas", 15,8,0, "a", "d")
+motor1.start()
