@@ -1,38 +1,41 @@
 import Speedway from "./speedway.js";
 const speedway = new Speedway("canvas");
 
+
 export default class Motor {
-  pos = { x: 0, y: 0 };
-  angle = 0;
-  isMoving = true;
-  speed = 0.35;
-  constructor(canvasId, width, height, count, leftKey, rightKey) {
+  pos = { x: 0, y: 0 }
+  angle = 0
+  isMoving = true
+  speed = 0.35
+  constructor(canvasId, width, height, count, leftKey, rightKey, track) {
     this.canvas = document.getElementById(canvasId);
     this.ctx = this.canvas.getContext("2d");
     this.speedway = speedway;
+    this.track = track
     this.width = width;
     this.height = height;
     this.pos.x = this.canvas.width / 2;
-    this.pos.y = 600 + 15 * count;
-    this.chickenPattern = null
+    this.pos.y = 600 + 30 * count;
+    this.horsePatttern = null
+    this.count = count
     this.loadImage()
     this.leftKey = leftKey;
     this.rightKey = rightKey;
-    this.lastTurnLeft = 0;
-    this.lastTurnRight = 0;
-    this.turnDelay = 40;
     this.lastFrameTime = 0;
     this.move = this.move.bind(this);
-    document.addEventListener("keydown", this.keyPress.bind(this));
+    //? Obsługa wielu klawiszy
+    this.pressedKeys = {}
+    document.addEventListener("keydown", this.keyDown.bind(this));
+    document.addEventListener("keyup", this.keyUp.bind(this));
   }
   loadImage() {
-    const chickenImg = new Image();
-    chickenImg.src = 'img/chicken.png';
+    const img = new Image();
+    img.src = `img/kon${this.count}.png`;
 
-    chickenImg.onload = () => {
-      this.chickenPattern = this.ctx.createPattern(chickenImg, "repeat");
+    img.onload = () => {
+      this.horsePatttern = this.ctx.createPattern(img, "repeat");
     }
-}
+  }
   //* Poruszanie do przodu
   start() {
     requestAnimationFrame(this.move);
@@ -42,23 +45,27 @@ export default class Motor {
     this.ctx.translate(this.pos.x, this.pos.y);
     this.ctx.rotate((this.angle * Math.PI) / 180);
     this.ctx.translate(-this.width / 2, -this.height / 2);
-    this.ctx.fillStyle = this.chickenPattern;
+    this.ctx.fillStyle = this.horsePatttern;
     this.ctx.fillRect(0, 0, this.width, this.height);
     this.ctx.restore();
-}
+  }
 
-  
+
   update(deltaTime) {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.speedway.drawSpeedway();
+    if (this.count == 1) {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.speedway.drawSpeedway();
+    }
     this.isInPath();
     const radians = (this.angle * Math.PI) / 180;
     this.pos.x += this.speed * Math.cos(radians) * deltaTime;
     this.pos.y += this.speed * Math.sin(radians) * deltaTime;
-    this.drawMotor();
-    this.drawCorners()
+    this.track.savePoint({ x: this.pos.x, y: this.pos.y })
+    this.drawMotor()
+
+    // this.drawCorners()
   }
-  
+
   move(timestamp) {
     if (!this.isMoving) return;
     if (!this.lastFrameTime) this.lastFrameTime = timestamp;
@@ -69,26 +76,28 @@ export default class Motor {
   }
 
   //* Przyciski
-  keyPress(event) {
-    if (event.key === this.leftKey) {
+  keyDown(event) {
+    this.pressedKeys[event.key] = true
+    this.handleKeys()
+  }
+
+  keyUp(event) {
+    this.pressedKeys[event.key] = false
+    this.handleKeys()
+  }
+  handleKeys() {
+    if (this.pressedKeys[this.leftKey]) {
       this.turnLeft();
-    } else if (event.key === this.rightKey) {
+    }
+    if (this.pressedKeys[this.rightKey]) {
       this.turnRight();
     }
   }
   turnLeft() {
-    const currentTime = Date.now();
-    if (currentTime - this.lastTurnLeft > this.turnDelay) {
-      this.angle -= 7;
-      this.lastTurnLeft = currentTime;
-    }
+    this.angle -= 8;
   }
   turnRight() {
-    const currentTime = Date.now();
-    if (currentTime - this.lastTurnRight > this.turnDelay) {
-      this.angle += 7;
-      this.lastTurnRight = currentTime;
-    }
+    this.angle += 8;
   }
 
   //* Sprawdzanie czy auto jest w torze
@@ -121,16 +130,16 @@ export default class Motor {
   }
 
   getCorners() {
-    const radians = (this.angle * Math.PI) / 180;
-    const halfWidth = this.width / 2;
-    const halfHeight = this.height / 2;
-    const cosA = Math.cos(radians);
-    const sinA = Math.sin(radians);
-  
+    const radians = (this.angle * Math.PI) / 180
+    const halfWidth = this.width / 2 - 1
+    const halfHeight = this.height / 2 - 1
+    const cosA = Math.cos(radians)
+    const sinA = Math.sin(radians)
+
     const corners = [
       {
-        x: this.pos.x + (cosA * halfWidth) - (sinA * halfHeight) ,
-        y: this.pos.y + (sinA * halfWidth) + (cosA * halfHeight)  ,
+        x: this.pos.x + (cosA * halfWidth) - (sinA * halfHeight),
+        y: this.pos.y + (sinA * halfWidth) + (cosA * halfHeight),
       },
       {
         x: this.pos.x - (cosA * halfWidth) - (sinA * halfHeight),
@@ -145,20 +154,19 @@ export default class Motor {
         y: this.pos.y - (sinA * halfWidth) - (cosA * halfHeight),
       },
     ];
-  
-    return corners;
+
+    return corners
   }
-  
 
 
-//   ! Wyświetlanie narożników
+  //   ! Wyświetlanie narożników
   drawCorners() {
-      const corners = this.getCorners();
-      this.ctx.fillStyle = 'red';
-      for (const corner of corners) {
-          this.ctx.beginPath();
-          this.ctx.arc(corner.x, corner.y, 2, 0, 2 * Math.PI);
-          this.ctx.fill();
-      }
+    const corners = this.getCorners();
+    this.ctx.fillStyle = 'red';
+    for (const corner of corners) {
+      this.ctx.beginPath();
+      this.ctx.arc(corner.x, corner.y, 2, 0, 2 * Math.PI);
+      this.ctx.fill();
+    }
   }
 }
