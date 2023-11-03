@@ -1,10 +1,12 @@
 export default class Track {
     points = []
+    pointTime = []
     constructor(canvasId) {
         this.canvas = document.getElementById(canvasId);
         this.ctx = this.canvas.getContext("2d");
         this.dirtPatttern = null
         this.loadImage()
+        this.startTime = new Date().getTime()
     }
     loadImage() {
         const img = new Image();
@@ -19,6 +21,7 @@ export default class Track {
         this.drawTrack()
     }
     drawTrack() {
+        
         this.ctx.beginPath()
         this.points.forEach((el, nr) => {
             if (nr == 0){

@@ -22,7 +22,6 @@ export default class Motor {
     this.leftKey = leftKey;
     this.rightKey = rightKey;
     this.lastFrameTime = 0;
-    this.move = this.move.bind(this);
     //? Obsługa wielu klawiszy
     this.pressedKeys = {}
     document.addEventListener("keydown", this.keyDown.bind(this));
@@ -38,7 +37,7 @@ export default class Motor {
   }
   //* Poruszanie do przodu
   start() {
-    requestAnimationFrame(this.move);
+    requestAnimationFrame(this.move.bind(this));
   }
   drawMotor() {
     this.ctx.save();
@@ -72,7 +71,7 @@ export default class Motor {
     const deltaTime = timestamp - this.lastFrameTime;
     this.lastFrameTime = timestamp;
     this.update(deltaTime);
-    requestAnimationFrame(this.move);
+    requestAnimationFrame(this.move.bind(this));
   }
 
   //* Przyciski
