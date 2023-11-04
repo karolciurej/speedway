@@ -6,7 +6,7 @@ export default class Motor {
   pos = { x: 0, y: 0 }
   angle = 0
   isMoving = true
-  speed = 0.35
+  speed = 300
   constructor(canvasId, width, height, count, leftKey, rightKey, track) {
     this.canvas = document.getElementById(canvasId);
     this.ctx = this.canvas.getContext("2d");
@@ -49,29 +49,32 @@ export default class Motor {
     this.ctx.restore();
   }
 
-
   update(deltaTime) {
     if (this.count == 1) {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.speedway.drawSpeedway();
+      this.speedway.drawSpeedway()
     }
-    this.isInPath();
+    this.isInPath()
     const radians = (this.angle * Math.PI) / 180;
     this.pos.x += this.speed * Math.cos(radians) * deltaTime;
     this.pos.y += this.speed * Math.sin(radians) * deltaTime;
-    this.track.savePoint({ x: this.pos.x, y: this.pos.y })
+    this.track.savePoint({ x: this.pos.x + Math.cos(radians + Math.PI) * 23, y: this.pos.y + Math.sin(radians + Math.PI) * 23, expire: 10 })
     this.drawMotor()
 
+    this.track.points = this.track.points.map((el) => {
+      el.expire -= deltaTime
+      return el
+    }).filter(({expire}) => expire > 0)
     // this.drawCorners()
   }
 
   move(timestamp) {
-    if (!this.isMoving) return;
+    if (!this.isMoving) return
     if (!this.lastFrameTime) this.lastFrameTime = timestamp;
-    const deltaTime = timestamp - this.lastFrameTime;
-    this.lastFrameTime = timestamp;
-    this.update(deltaTime);
-    requestAnimationFrame(this.move.bind(this));
+    const deltaTime = (timestamp - this.lastFrameTime) / 1000;
+    this.lastFrameTime = timestamp
+    this.update(deltaTime)
+    requestAnimationFrame(this.move.bind(this))
   }
 
   //* Przyciski
@@ -93,10 +96,10 @@ export default class Motor {
     }
   }
   turnLeft() {
-    this.angle -= 8;
+    this.angle -= 4;
   }
   turnRight() {
-    this.angle += 8;
+    this.angle += 4;
   }
 
   //* Sprawdzanie czy auto jest w torze
