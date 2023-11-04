@@ -20,3 +20,52 @@
     background-image: url("../img/frame2.png");
     background-repeat: no-repeat;
 }
+
+.menu{
+    width: 100vw;
+    height: 100vh;
+    background-image: url(../img/tlomenu2.png);
+    background-repeat: no-repeat;
+
+    display: grid;
+    place-items: center;
+}
+
+form{
+    background-color: rgba(255,255,255, 0.01);
+    width: 1050px;
+    height: 550px;
+    backdrop-filter: blur(4px);
+    padding: 10px;
+    border-radius: 20px;
+    display: flex;
+
+    justify-content: center;
+    flex-direction: column;
+    gap:10px;
+}
+
+.player{
+    display: flex;
+    flex-direction: column;
+    gap:10px;
+}
+
+
+.toggle{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+
+}
+.toggle img{
+    height: 80px;
+
+}
+
+.key{
+    width: 60px;
+}
+.button{
+    width: 100%;
+}

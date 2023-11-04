@@ -96,10 +96,10 @@ export default class Motor {
     }
   }
   turnLeft() {
-    this.angle -= 4;
+    this.angle -= 8
   }
   turnRight() {
-    this.angle += 4;
+    this.angle += 8
   }
 
   //* Sprawdzanie czy auto jest w torze
