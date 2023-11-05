@@ -7,9 +7,10 @@ export default class Motor {
   angle = 0
   isMoving = true
   speed = 300
-  constructor(canvasId, width, height, count, leftKey, rightKey, track) {
+  constructor(canvasId, width, height, count, leftKey, rightKey, track, name, starting) {
     this.canvas = document.getElementById(canvasId);
     this.ctx = this.canvas.getContext("2d");
+    this.name = name
     this.speedway = speedway;
     this.track = track
     this.width = width;
@@ -18,6 +19,7 @@ export default class Motor {
     this.pos.y = 600 + 30 * count;
     this.horsePatttern = null
     this.count = count
+    this.starting = starting
     this.loadImage()
     this.leftKey = leftKey;
     this.rightKey = rightKey;
@@ -50,7 +52,7 @@ export default class Motor {
   }
 
   update(deltaTime) {
-    if (this.count == 1) {
+    if (this.starting) {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.speedway.drawSpeedway()
     }
