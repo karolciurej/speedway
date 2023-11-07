@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,23 +9,24 @@
     <link rel="stylesheet" href="https://unpkg.com/minecraft-framework-css@1.1.9/css/main.css">
     <title>Document</title>
 </head>
+
 <body>
     <div class="container2">
         <div class="menu">
             <form action="" onsubmit="return false">
                 <div class="player">
                     <div class="toggle horse1">
-                        <input type="checkbox" id="horse1" >
+                        <input type="checkbox" id="horse1" checked >
                         <img src="./img/konpodglad1.png" alt="1">
-                        <input type="text" class="input-text name1" name="1" placeholder="Nazwa" >
-                        <input type="text" class="input-text keyLeft1 key" placeholder="Lewo">
-                        <input type="text" class="input-text keyRight1 key" placeholder="Prawo">
+                        <input type="text" class="input-text name1" name="1" placeholder="Nazwa" value="csacs">
+                        <input type="text" class="input-text keyLeft1 key" placeholder="Lewo" value="a">
+                        <input type="text" class="input-text keyRight1 key" placeholder="Prawo" value="d">
                         <input type="color" name="a" id="color1">
                     </div>
                     <div class="toggle horse2">
-                        <input type="checkbox" id="horse2">
+                        <input type="checkbox" id="horse2" checked>
                         <img src="./img/konpodglad2.png" alt="2">
-                        <input type="text" class="input-text name2" placeholder="Nazwa">
+                        <input type="text" class="input-text name2" placeholder="Nazwa" value="asdfsd">
                         <input type="text" class="input-text keyLeft2 key" placeholder="Lewo">
                         <input type="text" class="input-text keyRight2 key" placeholder="Prawo">
                         <input type="color" name="a" id="color2">
@@ -46,12 +48,48 @@
                         <input type="color" name="a" id="color4">
                     </div>
                 </div>
-                <button class="button" style="text-align:center;" >Start</button>
+                <div class="submit">
+                    <p>Okrazenia</p>
+                    <input type="range" class="loops" min="1" max="10"
+                        oninput="this.nextElementSibling.value = this.value">
+                    <output class="text-dark">6</output>
+                </div>
+
+                <button class="button" style="text-align:center;">Start</button>
+
             </form>
         </div>
         <div class="frame">
-            <canvas  id="canvas" width="1400" height="800"></canvas>
+            <canvas id="canvas" width="1400" height="800"></canvas>
+            <table class="results">
+                <tr>
+                    <td><img src="./img/konpodglad1.png" alt=""></td>
+                    <td><img src="./img/konpodglad2.png" alt=""></td>
+                    <td><img src="./img/konpodglad3.png" alt=""></td>
+                    <td><img src="./img/konpodglad4.png" alt=""></td>
+                </tr>
+                <tr>
+                    <td class="nick1">Brak Gracza</td>
+                    <td class="nick2">Brak Gracza</td>
+                    <td class="nick3">Brak Gracza</td>
+                    <td class="nick4">Brak Gracza</td>
+                </tr>
+                <tr>
+                    <td class="loop1">?/?</td>
+                    <td class="loop2">?/?</td>
+                    <td class="loop3">?/?</td>
+                    <td class="loop4">?/?</td>
+                </tr>
+            </table>
         </div>
+        <div class="title">
+            <h2 class="h2">KONIEC</h2>
+            <p class="winName">Wygral player</p>
+            <button onclick="window.location.reload()" class="button" style="text-align:center;">Zagraj ponownie</button>
+
+
+        </div>
+
 
     </div>
     <!-- <input type="checkbox"> -->

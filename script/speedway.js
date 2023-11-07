@@ -44,5 +44,9 @@ export default class Speedway {
     this.ctx.ellipse(950, 400, 150, 175, 0, 0, 2 * Math.PI);
     this.ctx.fill();
     this.ctx.fillRect(450, 225, 500, 350);
+    this.ctx.beginPath()
+    this.ctx.fillStyle = "#000000EE"
+    this.ctx.fillRect(675,575,5,175)
+    
   }
 }
