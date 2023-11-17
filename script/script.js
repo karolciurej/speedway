@@ -2,6 +2,7 @@ import Speedway from './speedway.js';
 import Motor from './motor.js';
 import Track from './track.js';
 
+// Uruchomić liveserwer
 
 let motor1, motor2, motor3, motor4;
 const players = []

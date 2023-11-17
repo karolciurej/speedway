@@ -1,3 +1,5 @@
+// Uruchomić liveserwer
+
 import Speedway from "./speedway.js";
 const speedway = new Speedway("canvas");
 import players from "./script.js"
@@ -9,6 +11,7 @@ export default class Motor {
   isMoving = true
   speed = 300
   motorLoops = 0
+  isWinChecked = false
   constructor(canvasId, width, height, count, leftKey, rightKey, track, name, starting, loops) {
     this.canvas = document.getElementById(canvasId);
     this.ctx = this.canvas.getContext("2d");
@@ -18,7 +21,7 @@ export default class Motor {
     this.width = width;
     this.height = height;
     this.loops = loops
-    this.pos.x = this.canvas.width / 2;
+    this.pos.x = this.canvas.width / 2
     this.pos.y = 600 + 30 * count;
     this.horsePatttern = null
     this.count = count
@@ -62,7 +65,7 @@ export default class Motor {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.speedway.drawSpeedway()
     }
-    
+
     this.isInPath()
     this.isLastPlayerRemaining(players)
     this.checkWin()
@@ -74,7 +77,7 @@ export default class Motor {
     this.track.points = this.track.points.map((el) => {
       el.expire -= deltaTime
       return el
-    }).filter(({expire}) => expire > 0)
+    }).filter(({ expire }) => expire > 0)
     // this.drawCorners()
   }
 
@@ -114,7 +117,7 @@ export default class Motor {
     const remainingPlayers = players.filter((player) => player.isMoving);
     return remainingPlayers.length == 1;
   }
-  
+
 
   //* Sprawdzanie czy auto jest w torze
   isInPath() {
@@ -142,38 +145,58 @@ export default class Motor {
 
     if (!cornersInside || !cornersOutside) {
       this.speed = 0;
-      this.isMoving = false
-      if(players.length == 1){
-        document.querySelector(".title").style.visibility = "visible"
-        document.querySelector(".winName").innerHTML = `Przegral ${this.name}`
-        document.querySelector(".h2").innerHTML = "Przegrana"
+      this.isMoving = false;
+      if (players.length == 1 && !this.isWinChecked) {
+        this.announceLoss(this);
       }
     }
   }
-  checkWin(){
-    const path = new Path2D
-    path.rect(675,575,5,175)
-    if(this.isLastPlayerRemaining(players) && players.length > 1){
-      this.isMoving = false
-      this.speed = 0
-      document.querySelector(".title").style.visibility = "visible"
-      document.querySelector(".winName").innerHTML = `Wygral ${this.name}`
+  checkWin() {
+    const finishLine = new Path2D();
+    finishLine.rect(675, 575, 5, 175);
+    if (this.ctx.isPointInPath(finishLine, this.pos.x, this.pos.y)) {
+      this.motorLoops += 1;
+      document.querySelector(`.loop${this.count}`).innerHTML = `${this.motorLoops}/${this.loops}`;
     }
 
+    const activePlayers = players.filter(player => player.isMoving);
 
-    if(this.ctx.isPointInPath(path, this.pos.x, this.pos.y)){
-      this.motorLoops += 1
-      document.querySelector(`.loop${this.count}`).innerHTML = `${this.motorLoops}/${this.loops}`
-      console.log(this.isLastPlayerRemaining(players))
-      if(this.motorLoops == this.loops){
-        this.isMoving = false
-        this.speed = 0
-        document.querySelector(".title").style.visibility = "visible"
-        document.querySelector(".winName").innerHTML = `Wygral ${this.name}`
+    if (players.length == 1) {
+      if (this.motorLoops == this.loops && !this.isWinChecked) {
+        this.announceWin(this);
       }
-
+    }
+    else {
+      const isLastMotor = activePlayers.length == 1;
+      if (this.motorLoops == this.loops && !this.isWinChecked) {
+        this.announceWin(this);
+      }
+      else if (isLastMotor && !this.isWinChecked) {
+        this.announceWin(activePlayers[0]);
+      }
     }
   }
+
+  announceLoss(losingMotor) {
+    losingMotor.isWinChecked = true;
+    document.querySelector(".title").style.visibility = "visible";
+    document.querySelector(".winName").innerHTML = `Przegrał ${losingMotor.name}`;
+  }
+
+  announceWin(winningMotor) {
+    winningMotor.isWinChecked = true;
+    document.querySelector(".title").style.visibility = "visible";
+    document.querySelector(".winName").innerHTML = `Wygrał ${winningMotor.name}`;
+    players.forEach(player => {
+      player.isWinChecked = true;
+      player.isMoving = false;
+      player.speed = 0;
+    });
+  }
+
+
+
+
 
   getCorners() {
     const radians = (this.angle * Math.PI) / 180

@@ -1,3 +1,5 @@
+// Uruchomić liveserwer
+
 export default class Speedway {
   constructor(canvasId) {
     this.canvas = document.getElementById(canvasId);

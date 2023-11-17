@@ -1,3 +1,5 @@
+// Uruchomić liveserwer
+
 export default class Track {
     points = []
     constructor(canvasId,color) {
