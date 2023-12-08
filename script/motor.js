@@ -108,10 +108,10 @@ export default class Motor {
     }
   }
   turnLeft() {
-    this.angle -= 8
+    this.angle -= 4
   }
   turnRight() {
-    this.angle += 8
+    this.angle += 4
   }
   isLastPlayerRemaining(players) {
     const remainingPlayers = players.filter((player) => player.isMoving);
@@ -153,7 +153,7 @@ export default class Motor {
   }
   checkWin() {
     const finishLine = new Path2D();
-    finishLine.rect(675, 575, 5, 175);
+    finishLine.rect(675, 575, 2, 175);
     if (this.ctx.isPointInPath(finishLine, this.pos.x, this.pos.y)) {
       this.motorLoops += 1;
       document.querySelector(`.loop${this.count}`).innerHTML = `${this.motorLoops}/${this.loops}`;
